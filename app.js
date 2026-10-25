@@ -1,43 +1,6 @@
 (() => {
   'use strict';
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const form = document.querySelector('#sketch-form');
-  const shapes = {dress:{name:'Платье',number:'01'},jacket:{name:'Жакет',number:'02'},skirt:{name:'Юбка',number:'03'}};
-  const colors = {blue:{name:'Ультрамарин',hex:'#304bc4'},graphite:{name:'Графит',hex:'#353534'},rose:{name:'Пыльная роза',hex:'#a36367'},sage:{name:'Шалфей',hex:'#b4bdac'}};
-  const figure = document.querySelector('#garment-svg');
-  let brief = '';
-  function update(animate = false) {
-    const shape = shapes[form.elements.shape.value];
-    const color = colors[form.elements.color.value];
-    document.querySelector('#garment-use').setAttribute('href',`assets/silhouettes.svg#${form.elements.shape.value}`);
-    figure.style.setProperty('--fabric-color',color.hex);
-    figure.setAttribute('aria-label',`Полотно эскиза: ${shape.name.toLowerCase()}, цвет ${color.name.toLowerCase()}`);
-    document.querySelector('#sketch-number').textContent = shape.number;
-    document.querySelector('#color-name').value = color.name;
-    document.querySelector('#sketch-caption').textContent = `${shape.name} / ${color.name.toLowerCase()}`;
-    if(animate && !reducedMotion.matches && figure.animate) figure.animate([{opacity:.55},{opacity:1}],{duration:210,easing:'ease-out'});
-  }
-  form.elements.note.addEventListener('input', () => { form.elements.note.value = form.elements.note.value.slice(0,160); });
-  update();
-  form.addEventListener('change', event => {if(['shape','color'].includes(event.target.name))update(true);});
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    const shape = shapes[form.elements.shape.value], color = colors[form.elements.color.value];
-    const note = form.elements.note.value.trim();
-    const seams = Number(figure.dataset.seams || 0);
-    brief = `Здравствуйте! Хочу обсудить индивидуальный пошив.\nСилуэт: ${shape.name.toLowerCase()}.\nЦветовое настроение: ${color.name.toLowerCase()}.\nНазначение: ${form.elements.occasion.value.toLowerCase()}.`+(note?`\nПожелания: ${note}`:'')+(seams?`\nНа эскизе добавлено авторских линий: ${seams}. Эскиз могу приложить отдельно.`:'')+'\nПодскажите, пожалуйста, возможность пошива, ориентир по стоимости и удобное время для встречи.';
-    document.querySelector('#brief-summary').textContent = brief;
-    document.querySelector('#copy-status').textContent = '';
-    document.querySelector('#brief-dialog').showModal();
-  });
-  document.querySelector('#copy-brief').addEventListener('click',async () => {
-    let success = false;
-    try { await navigator.clipboard.writeText(brief); success = true; } catch (_) {
-      const el = document.createElement('textarea');el.value=brief;el.style.position='fixed';el.style.opacity='0';
-      document.querySelector('#brief-dialog').append(el);el.select();try{success=document.execCommand('copy');}catch(_){}el.remove();document.querySelector('#copy-brief').focus();
-    }
-    document.querySelector('#copy-status').textContent = success?'Запрос скопирован. Передайте его ателье удобным способом.':'Автоматическое копирование недоступно. Выделите и скопируйте текст запроса выше.';
-  });
   function refreshScroll() { if(window.ScrollTrigger) ScrollTrigger.refresh(); }
 
   const appointmentForm = document.querySelector('#appointment-form');
@@ -151,8 +114,12 @@
     settleImmediately();
   }
   const hero = document.querySelector('.hero');
-  const measure = hero.querySelector('.measure-line');
-  reactToPointer(hero, hero, (x, y) => { measure.style.opacity = String(.65 + Math.abs(x) * .35); });
+  const photo = hero.querySelector('.fabric-frame img');
+  const labelMark = hero.querySelector('.hero-label svg');
+  reactToPointer(hero, hero, (x, y, enabled) => {
+    photo.style.transform = enabled ? `translate(${x * 12}px, ${y * 10}px) scale(1.14) rotate(${x * .6}deg)` : '';
+    labelMark.style.transform = enabled ? `rotate(${x * 15}deg) translateY(${y * 8}px)` : '';
+  });
   const approach = document.querySelector('#approach');
   const approachThread = approach.querySelector('.approach-thread path');
   reactToPointer(approach, approach, (x, y) => {
@@ -165,15 +132,17 @@
       art.style.rotate = enabled ? `${x * 12}deg` : '';
     });
   });
-  const sketch = document.querySelector('#sketch');
-  const sketchBoard = sketch.querySelector('.sketch-board');
-  reactToPointer(sketch, sketch, (x, y, enabled) => {
-    sketchBoard.style.backgroundPosition = enabled ? `${x * 7}px ${y * 7}px` : '';
+  const wardrobe = document.querySelector('#sketch');
+  reactToPointer(wardrobe, wardrobe, () => {});
+  document.querySelectorAll('.look-choice').forEach(card => {
+    const illustration = card.querySelector('svg');
+    reactToPointer(card, card, (x, y, enabled) => {
+      illustration.style.transform = enabled ? `translate(${x * 8}px, ${y * 6}px) rotate(${x * 1.7}deg)` : '';
+    });
   });
-  const workshop = document.querySelector('#line-game');
-  const workshopFigure = document.querySelector('#workshop-garment');
-  reactToPointer(workshop, workshop, (x, y, enabled) => {
-    workshopFigure.style.translate = enabled ? `${x * 5}px ${y * 3}px` : '';
+  const colorStudio = document.querySelector('#line-game');
+  reactToPointer(colorStudio, colorStudio, (x, y, enabled) => {
+    colorStudio.style.setProperty('--fold-shift', enabled ? `${x * 8}px` : '0px');
   });
   const contact = document.querySelector('#contact');
   const contactThread = contact.querySelector('.contact-thread path');

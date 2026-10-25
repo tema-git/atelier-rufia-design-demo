@@ -1,37 +1,40 @@
-# Rufia — material, drawing, workshop
+# RUFIA — a personal wardrobe, before the first appointment
 
-Updated 2026-10-25. Independent design concept, not an official identity or actual garment catalogue. Audience: people considering a conversation with the atelier. Primary action: contact or try the clearly marked demo enquiry form.
+Current design: 25 October 2026, second revision. This is an independent concept, not official identity or an actual garment catalogue. The purpose is to help a visitor find a direction and talk to the atelier.
 
-## References consulted
+## References and adaptations
 
-- https://styles.refero.design/style/cdc4a162-cefa-49a1-81e7-4857e421ae24 — Adam Lippes reference: the photographic plate, paper surface and strong image proportions anchor the fashion composition. We retain the existing Rufia layout, Cyrillic Prata/Golos, 18px reading copy and ultramarine actions; we do not copy its monochrome-only palette or small navigation.
-- https://21st.dev/@ibelick/components/spotlight — Julien Thibeaut Spotlight: pointer-controlled illumination over a fixed surface. Public usage and description inspected; implementation source requires an account. No source was copied and no React dependency was installed. The original local equivalent changes the light on stationary fabric.
-- https://motionsites.ai/lesson/cursor-tracking-website-with-motionsites — public tutorial: bounded pointer input controls a visual property; input is not an excuse to slide an entire picture. Original response here is light position and woven detail. No video, remote prompt execution or paid source was used.
+- https://styles.refero.design/style/cdc4a162-cefa-49a1-81e7-4857e421ae24 — Adam Lippes: generous image proportions, editorial fashion hierarchy and paper surfaces. Here the existing ultramarine and Cyrillic Prata/Golos stay, with 18px body and 16px controls instead of small monochrome navigation.
+- https://21st.dev/@ibelick/components/spotlight — bounded light over a fixed frame. Public description and usage inspected; the actual component source requires an account. The implementation is original vanilla JS; no React dependency or copied source.
+- https://motionsites.ai/lesson/cursor-tracking-website-with-motionsites — pointer movement controls a bounded visual response. Here the cropped photo and its decorative label respond; buttons and text do not move. Public material was consulted, not a paid prompt archive.
+- Existing Diamond Cup in this project: the user's accepted reference for a subject-focused photographic hero with layered depth. Rufia keeps its own paper/ultramarine visual identity.
 
-Live browser verification belongs to the task's QA pass; inspecting these references is not a claim to have tested their demos.
+Reference reading does not imply live behavior testing. Main browser QA is coordinated by the parent task.
 
-## Design system
+## Visual system
 
-Preserved: paper #efefeb, ink #202221, ultramarine #304bc4, secondary #61655f, ruled borders #c6c9c1. Prata for editorial titles, Golos Text for controls and body. Body 18px; controls 16px; secondary copy14px. Main maximum width1380px, desktop sidegaps48px, mobile20px. Square working sheets, a fixed textile photograph and code-native garment drawings.
+Paper #efefeb; ink #202221; ultramarine #304bc4; quiet text #61655f; rules #c6c9c1; light studio surface #e5e7df. Prata for display typography and large RUFIA wordmark, Golos Text for body and controls. Existing max width1380px and mobile side gaps20px. The original large wordmark replaces a tiny emblem; its curved underline is a quiet signature. It is not presented as the company's official identity.
 
-The new emblem is an original needle with trailing thread. It replaces the bare R in header/footer/favicon; its concept status is disclosed in the demo information.
+## Final interaction map
 
-## Interaction map
-
-| Section | Input → response | Bounds and alternatives |
+| Area | Input → response | Touch/keyboard/reduced motion |
 | --- | --- | --- |
-| Material hero | Move pointer → sheen follows over fixed photo; activate → reveal woven overlay | Image never translates/scales/rotates and native image drag is disabled. Light clamps0–100%. Touch tap and Enter toggle detail; keyboard arrows move light. Reduced motion uses static/discrete light. |
-| Approach | Pointer → curved thread and sketch motifs respond | Existing bounded decorative response; text and targets remain fixed; reduced motion is static. |
-| Sketch | Enable pen → mouse/touch drawing or keyboard polyline; change garment/color → preserve per-garment drawings | SVG coordinate bounds8–392 and8–512; max24 lines ×600 points per silhouette. Mouse/finger draws. Arrow keys move pen; Enter/Space adds a point, Esc ends a line. Undo/clear and SVG download produce a usable result. Native page scrolling remains available outside the explicitly enabled drawing surface. |
-| Workshop | Choose material/cut/detail → live garment changes; check against the brief → specific feedback | Three fictional briefs and three completed garments; wrong attempts can be revised, successful choices lock until next order; restart clears all. Native radios/buttons support touch/keyboard. Artwork alone responds to pointer. |
-| Contact/footer | Pointer/focus → needle/thread and form border respond | Fields and main targets remain fixed; form is an honest local demonstration. |
+| Hero | Pointer moves a cropped photograph at most12px/10px and0.6°, with a1.14 crop reserve; light and decorative label respond | Native image drag disabled. No fake fabric button or instructions. Reduced motion removes transforms. |
+| Approach | Pointer bends the connecting thread and moves the three motif drawings | Stable copy; reduced motion is static. |
+| Your wardrobe | Choose a complete dress/jacket/skirt illustration, colour and occasion; summary changes; CTA carries it into the enquiry block | Native radios and select; whole click targets stable. Cards' inner drawings respond to pointer. There is no drawing editor, SVG download or separately placed garment detail. |
+| Colour studio | Match a reference sample using hue/saturation/lightness. Compare → numerical feedback and directional hints. Three rounds → completion and replay | Native range inputs and buttons; touch and keyboard supported. Optional hint adjusts one parameter for people who cannot distinguish the tones. Target colours are never altered. Background fold highlights alone follow pointer. |
+| Contacts/footer | Thread/border response; actual phone/email and honest demo form | Sticky Contacts remains visible; no personal-data persistence or real submissions. |
 
-## Workshop solutions and QA path
+## QA path
 
-1. Аня, summer city walk: Лён + Свободный + Карманы.
-2. Мира, dancing: Трикотаж + Приталенный + Пояс.
-3. Даша, presentation: Жаккард + Структурный + Лацканы.
+Wardrobe: choose jacket, rose, special event; verify all illustrations use the selected colour and only jacket is selected. Click Discuss → expected idea in the booking panel, name field focused and visible below sticky header. Repeat with skirt/sage and ensure the idea replaces the previous one. Validate form failure, local success and reset.
 
-Submit with missing selections, submit a wrong combination, revise and solve all three, then restart. Three collections appear progressively. Verify rapid repeated submit/next cannot duplicate cards. This is an interpretive design game with explicit fictional wishes, not professional tailoring advice.
+Colour game: initial mismatch → Compare gives score and directions. Adjust each slider; the own sample changes while target stays fixed. Targets:
 
-Sketch QA: toggle pen, draw two strokes, undo, clear, add keyboard line, change color, switch silhouette and back (drawing persists per silhouette), export SVG. No drawing or personal data is stored across reload. Existing enquiry form remains unchanged.
+1. Ultramarine: hue227, saturation58, lightness48.
+2. Dusty rose: hue351, saturation28, lightness61.
+3. Sage: hue105, saturation12, lightness65.
+
+90% or more completes a round. For a deterministic accessible path, activate Hint up to three times, then Compare. Pass all rounds, verify final result and restart. Repeated Compare/Next clicks cannot duplicate or skip rounds because completed state guards each transition. The accuracy is a game metric, not a colour-calibration instrument; display differences are disclosed.
+
+Arrow SVGs point northeast at rest and right on hover/focus, without scroll rotation. Text selection changes only letter colour. Finite pointer loops stop on settling, hidden page and offscreen sections.
