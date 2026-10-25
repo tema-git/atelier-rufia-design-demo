@@ -35,6 +35,6 @@ Colour game: initial mismatch → Compare gives score and directions. Adjust eac
 2. Dusty rose: hue351, saturation28, lightness61.
 3. Sage: hue105, saturation12, lightness65.
 
-90% or more completes a round. For a deterministic accessible path, activate Hint up to three times, then Compare. Pass all rounds, verify final result and restart. Repeated Compare/Next clicks cannot duplicate or skip rounds because completed state guards each transition. The accuracy is a game metric, not a colour-calibration instrument; display differences are disclosed.
+90% or more completes a round. For a deterministic accessible path, activate Hint up to three times, then Compare. Pass all rounds, verify final result and restart. Buttons01–03 freely switch samples, retaining each sample’s slider values and solved score in session memory. Completion requires all three distinct samples, in any order. Next opens the next unsolved sample, wrapping after03; Restart clears every attempt. Repeated Compare cannot duplicate a solved sample. The accuracy is a game metric, not a colour-calibration instrument; display differences are disclosed.
 
 Arrow SVGs point northeast at rest and right on hover/focus, without scroll rotation. Text selection changes only letter colour. Finite pointer loops stop on settling, hidden page and offscreen sections.

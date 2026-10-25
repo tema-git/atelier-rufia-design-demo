@@ -43,8 +43,9 @@
   const hint = document.querySelector('#color-hint');
   const finish = document.querySelector('#color-finish');
   const check = form.querySelector('button');
+  const roundButtons = [...document.querySelectorAll('#color-progress button')];
+  const attempts = rounds.map(data => ({values:[...data.initial],score:null}));
   let round = 0, completed = false;
-  const scores = [];
   const hsl = (h,s,l) => `hsl(${h} ${s}% ${l}%)`;
   function values() { return {h:Number(form.elements.hue.value),s:Number(form.elements.saturation.value),l:Number(form.elements.lightness.value)}; }
   function hueDelta(a,b) { return ((a-b+540)%360)-180; }
@@ -58,6 +59,7 @@
   }
   function paintOwn() {
     const v=values(); own.style.setProperty('--sample', hsl(v.h,v.s,v.l));
+    attempts[round].values=[v.h,v.s,v.l];
     document.querySelector('#color-hue-value').value=`${v.h}°`;
     document.querySelector('#color-saturation-value').value=`${v.s}%`;
     document.querySelector('#color-lightness-value').value=`${v.l}%`;
@@ -74,19 +76,32 @@
     if(Math.abs(diff.l)>4) hints.push(diff.l>0?'Сделайте цвет темнее.':'Сделайте цвет светлее.');
     return hints.join(' ') || 'Очень близко. Немного уточните ползунки.';
   }
+  function renderProgress() {
+    roundButtons.forEach((item,index)=>{
+      const done=attempts[index].score!==null, current=index===round;
+      item.classList.toggle('is-done',done);item.classList.toggle('is-current',current);
+      item.setAttribute('aria-pressed',String(current));
+      item.setAttribute('aria-label',`Оттенок ${index+1}: ${rounds[index].name}${done?', готов':''}`);
+    });
+  }
+  function renderResult() {
+    const allDone=attempts.every(attempt=>attempt.score!==null);
+    form.querySelectorAll('input').forEach(input=>input.disabled=completed);
+    hint.hidden=check.hidden=completed;
+    next.hidden=!completed||allDone;finish.hidden=!allDone;
+    feedback.classList.toggle('is-success',completed);
+    document.querySelector('#color-match').textContent=completed?`${attempts[round].score}% совпадения`:'Попробуйте попасть в цвет';
+    feedback.textContent=completed?`Оттенок пойман — ${attempts[round].score}%! ${allDone?'Все три цвета найдены.':'Выберите другой образец или нажмите «Следующий оттенок».'}`:`${rounds[round].name}. Двигайте ползунки. После сравнения появится точность и направление следующего шага.`;
+    renderProgress();
+  }
   function setRound() {
-    const data=rounds[round]; completed=false;
-    form.elements.hue.value=data.initial[0]; form.elements.saturation.value=data.initial[1]; form.elements.lightness.value=data.initial[2];
-    form.querySelectorAll('input').forEach(input=>input.disabled=false);
+    const data=rounds[round], attempt=attempts[round]; completed=attempt.score!==null;
+    [form.elements.hue.value,form.elements.saturation.value,form.elements.lightness.value]=attempt.values;
     target.style.setProperty('--sample',hsl(data.h,data.s,data.l));
     target.setAttribute('aria-label',`Образец: ${data.name}. Используйте подсказку, если трудно различить оттенки.`);
     document.querySelector('#color-name').textContent=data.name;
     document.querySelector('#color-round').textContent=`Оттенок ${round+1} из 3`;
-    document.querySelector('#color-match').textContent='Попробуйте попасть в цвет';
-    feedback.textContent='Двигайте ползунки. После сравнения появится точность и направление следующего шага.';
-    feedback.classList.remove('is-success');
-    document.querySelectorAll('#color-progress span').forEach((item,index)=>{item.classList.toggle('is-done',index<round);item.classList.toggle('is-current',index===round);item.setAttribute('aria-label',`Оттенок ${index+1}${index<round?', готов':index===round?', сейчас':''}`);if(index===round)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current');});
-    next.hidden=finish.hidden=true;hint.hidden=check.hidden=false;
+    renderResult();
     paintOwn(); refresh();
   }
   form.addEventListener('input',()=>{if(!completed)paintOwn();});
@@ -95,12 +110,8 @@
     const accuracy=score();
     document.querySelector('#color-match').textContent=`${accuracy}% совпадения`;
     if(accuracy<90){feedback.textContent=`Совпадение ${accuracy}%. ${feedbackText()}`;return;}
-    completed=true;scores.push(accuracy);
-    form.querySelectorAll('input').forEach(input=>input.disabled=true);
-    check.hidden=hint.hidden=true;feedback.classList.add('is-success');
-    feedback.textContent=`Оттенок пойман — ${accuracy}%! ${round<2?'Можно перейти к следующему образцу.':'Все три цвета найдены.'}`;
-    document.querySelectorAll('#color-progress span').forEach((item,index)=>{const done=index<=round;item.classList.toggle('is-done',done);item.classList.remove('is-current');item.removeAttribute('aria-current');item.setAttribute('aria-label',`Оттенок ${index+1}${done?', готов':''}`);});
-    if(round<2){next.hidden=false;next.focus({preventScroll:true});}else{finish.hidden=false;finish.querySelector('a').focus({preventScroll:true});}
+    completed=true;attempts[round].score=accuracy;renderResult();
+    if(!next.hidden)next.focus({preventScroll:true});else finish.querySelector('a').focus({preventScroll:true});
     refresh();
   });
   hint.addEventListener('click',()=>{
@@ -113,9 +124,12 @@
     feedback.textContent=`${names[key]} настроен точно. ${score()>=90?'Теперь нажмите «Сравнить оттенки».':feedbackText()}`;
   });
   next.addEventListener('click',()=>{
-    if(!completed||round>=rounds.length-1)return;
-    round++;setRound();form.elements.hue.focus({preventScroll:true});
+    if(!completed)return;
+    const nextRound=rounds.map((_,offset)=>(round+offset+1)%rounds.length).find(index=>attempts[index].score===null);
+    if(nextRound===undefined)return;
+    round=nextRound;setRound();form.elements.hue.focus({preventScroll:true});
   });
-  document.querySelector('#color-restart').addEventListener('click',()=>{round=0;scores.length=0;setRound();form.elements.hue.focus({preventScroll:true});});
+  roundButtons.forEach((button,index)=>button.addEventListener('click',()=>{if(round===index)return;round=index;setRound();}));
+  document.querySelector('#color-restart').addEventListener('click',()=>{round=0;attempts.forEach((attempt,index)=>{attempt.values=[...rounds[index].initial];attempt.score=null;});setRound();form.elements.hue.focus({preventScroll:true});});
   setRound();
 })();
