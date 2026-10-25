@@ -611,3 +611,110 @@ a:hover > .ui-arrow, button:hover > .ui-arrow, a:focus-visible > .ui-arrow, butt
   .fabric-frame::after, .line-game::before { display: none; }
   .ui-arrow { transition: none; }
 }
+
+/* A material study, a working drawing and a small design workshop. */
+.tailor-symbol { width: 51px; height: 56px; flex: 0 0 51px; overflow: visible; color: var(--blue); }
+.tailor-symbol path { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.wordmark:hover .tailor-symbol path, .wordmark:focus-visible .tailor-symbol path { stroke-width: 2.2; }
+.fabric-material { display: block; width: 100%; padding: 0; border: 0; border-radius: 0; text-align: left; color: #fff; --fabric-x: 50%; --fabric-y: 50%; }
+.fabric-material img, .fabric-frame.is-reactive img { transform: none !important; translate: none !important; rotate: none !important; scale: none !important; pointer-events: none; -webkit-user-drag: none; }
+.fabric-frame::after { display: none; }
+.fabric-sheen, .fabric-weave, .fabric-folds { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fabric-sheen { background: radial-gradient(ellipse 45% 48% at var(--fabric-x) var(--fabric-y), #e4e9ff70, #7894ef15 58%, transparent 84%); mix-blend-mode: screen; opacity: .6; }
+.fabric-material:hover .fabric-sheen, .fabric-material:focus-visible .fabric-sheen { opacity: 1; }
+.fabric-weave { background: repeating-linear-gradient(11deg, #eef2ff99 0 .7px, transparent .7px 4px), repeating-linear-gradient(101deg, #101d6466 0 1px, transparent 1px 4px); mask-image: radial-gradient(ellipse 48% 50% at var(--fabric-x) var(--fabric-y), #000 5%, transparent 95%); opacity: 0; transition: opacity 300ms; }
+.fabric-folds { opacity: 0; transition: opacity 300ms; mix-blend-mode: screen; }
+.fabric-folds path { fill: none; stroke: #d9e3ff; stroke-width: 1.1; stroke-dasharray: 2 8; }
+.fabric-material[aria-pressed=true] .fabric-weave { opacity: .95; }
+.fabric-material[aria-pressed=true] .fabric-folds { opacity: .55; }
+.fabric-material[aria-pressed=true] .fabric-sheen { background: radial-gradient(ellipse 30% 60% at var(--fabric-x) var(--fabric-y), #e4e9ff8c, transparent 82%); }
+.fabric-label { position: absolute; bottom: 25px; left: 25px; right: 25px; padding: 14px 17px; display: grid; gap: 3px; width: fit-content; max-width: calc(100% - 50px); background: #182c65df; border: 1px solid #f5f6ff4d; pointer-events: none; }
+.fabric-label > span:first-child { font-size: 18px; }
+.fabric-label > span:last-child { font-size: 14px; line-height: 1.5; }
+.fabric-help { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 520px; }
+.fabric-material:focus-visible { outline-offset: 6px; }
+.hero-image figcaption { bottom: -29px; }
+.sketch-board { overflow: hidden; align-self: start; }
+.sketch-figure { flex: none; width: 100%; height: auto; aspect-ratio: 400 / 520; min-height: 0; max-height: 560px; transform: none !important; translate: none !important; rotate: none !important; }
+.sketch-figure:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.sketch-figure use, #custom-seams, #seam-pen { pointer-events: none; }
+#seam-pen { display: none; }
+.sketch-figure.is-drawing { touch-action: none; }
+.sketch-figure.is-drawing #seam-pen { display: block; }
+.seam-toolbar { display: flex; flex-wrap: wrap; gap: 9px; width: 100%; margin-top: 18px; }
+.seam-toolbar button, .seam-settings button { font-size: 16px; line-height: 1.4; min-height: 46px; border: 1px solid #304bc47a; padding: 10px 12px; background: #f4f5ef; color: var(--blue); }
+.seam-toolbar button:hover:not(:disabled), .seam-settings button:hover { background: #e1e5f4; }
+#seam-mode { background: var(--blue); border-color: var(--blue); color: white; }
+#seam-mode[aria-pressed=true] { background: #202221; border-color: #202221; }
+.seam-settings { width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 16px; }
+.seam-settings select { width: auto; min-height: 46px; margin: 0; padding: 10px 26px 10px 10px; flex: 1; }
+.seam-settings button { margin-left: auto; }
+.seam-help, .seam-status { width: 100%; margin-top: 15px; font-size: 14px; line-height: 1.6; color: #58634f; }
+.seam-status { min-height: 46px; color: #263a8e; }
+.board-bottom { margin-top: 22px; padding-top: 18px; border-top: 1px solid #c7cdbf; }
+.workshop-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr); align-items: start; gap: clamp(30px, 5vw, 76px); }
+.workshop-sheet { position: relative; padding: 24px; color: #202221; background-color: #e9ecf6; background-image: radial-gradient(ellipse at var(--pointer-x,50%) var(--pointer-y,50%), #fff 0%, transparent 58%), linear-gradient(#304bc410 1px, transparent 1px), linear-gradient(90deg, #304bc410 1px, transparent 1px); background-size: auto,24px 24px,24px 24px; border: 1px solid #c1cdef; box-shadow: 10px 12px 0 #1d318e; }
+.workshop-sheet-heading { display: flex; justify-content: space-between; gap: 20px; font-size: 16px; line-height: 1.5; color: #304bc4; }
+#workshop-count { white-space: nowrap; }
+.workshop-figure { width: 100%; max-height: 620px; aspect-ratio: 400 / 520; margin-block: 10px; overflow: hidden; }
+#workshop-caption { border-top: 1px solid #bcc5dc; padding-top: 18px; min-height: 60px; font-size: 16px; line-height: 1.5; }
+.workshop-collection { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 30px; font-size: 14px; color: #e1e7ff; min-height: 48px; }
+.workshop-collection > span { grid-column: 1 / -1; }
+.workshop-collection figure { min-width: 0; }
+.workshop-collection svg { width: 100%; color: #202221; background: #e9ecf6; }
+.workshop-collection figcaption { font-size: 14px; margin-top: 10px; line-height: 1.5; }
+.workshop-brief { padding: 0 0 25px; border-bottom: 1px solid #9caee277; margin-bottom: 25px; }
+.workshop-tag { font-size: 16px; color: #d4ddff; }
+.workshop-brief h3, .workshop-finish h3 { margin-top: 20px; font-family: var(--serif); font-size: clamp(29px,3vw,41px); line-height: 1.35; font-weight: 400; }
+.workshop-brief p { font-size: 18px; line-height: 1.7; margin-top: 19px; }
+#workshop-form fieldset { margin-bottom: 25px; }
+#workshop-form legend { font-size: 18px; margin-bottom: 12px; }
+.workshop-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; }
+.workshop-options label { display: flex; flex-direction: column; gap: 11px; position: relative; min-width: 0; padding: 13px 11px; border: 1px solid #a7b7e5a3; cursor: pointer; transition: background-color 160ms, border-color 160ms; }
+.workshop-options input { width: 18px; height: 18px; margin: 0; accent-color: #f4f5ee; }
+.workshop-options span { font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+.workshop-options small { display: block; margin-top: 7px; font-size: 14px; line-height: 1.4; color: #d3ddff; }
+.workshop-options label:hover, .workshop-options label:focus-within { background: #1e359c; border-color: white; }
+.workshop-options label:has(input:checked) { background: #f4f5ee; color: #263a95; border-color: white; --selection-color: #304bc4; }
+.workshop-options label:has(input:checked) small { color: #465780; }
+.workshop-options input:checked { accent-color: #304bc4; }
+#workshop-form fieldset:disabled label { cursor: default; }
+.workshop .button { --selection-color:#304bc4; background: #f4f5ee; color: #263a95; border-color: #f4f5ee; width: 100%; }
+.workshop .button:hover { background: #dce4ff; border-color: #dce4ff; }
+.workshop-feedback { padding: 18px 0; font-size: 16px; line-height: 1.65; min-height: 84px; }
+.workshop-feedback.needs-work { color: #ffdfb3; }
+.workshop-feedback.is-success { color: #e3f5b7; border-top: 1px solid #b2c595; margin-top: 18px; }
+.workshop-finish { padding-block: 20px; }
+.workshop-finish p { font-size: 18px; margin-block: 22px; }
+.workshop-restart { min-height: 48px; padding: 12px 0; border: 0; border-bottom: 1px solid #a7b7e5; background: transparent; color: white; font-size: 16px; text-align: left; }
+.workshop-disclaimer { font-size: 14px; color: #cbd7ff; line-height: 1.6; margin-top: 24px; }
+@media(max-width:1100px) {
+  .workshop-options { grid-template-columns: 1fr; }
+  .workshop-options label { flex-direction: row; align-items: center; gap: 12px; }
+  .workshop-options span { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 12px; }
+  .workshop-options small { margin: 0; }
+}
+@media(max-width:760px) {
+  .header .wordmark { gap: 8px; }
+  .header .tailor-symbol { width: 30px; height: 39px; flex-basis: 30px; }
+  .footer .tailor-symbol { width: 40px; height: 48px; flex-basis: 40px; }
+  .fabric-label { left: 15px; right: 15px; bottom: 16px; max-width: calc(100% - 30px); padding: 11px 13px; }
+  .fabric-label > span:first-child { font-size: 16px; }
+  .fabric-help { margin-top: 13px; font-size: 14px; }
+  .sketch-figure { height: auto; min-height: 0; max-height: none; }
+  .seam-toolbar { gap: 8px; }
+  .seam-toolbar button { padding-inline: 10px; }
+  .seam-settings { gap: 7px; }
+  .seam-settings select { flex: 1; }
+  .seam-settings button { margin-left: 0; }
+  .workshop-layout { grid-template-columns: 1fr; gap: 36px; }
+  .workshop-sheet { padding: 20px 18px; box-shadow: 6px 7px 0 #1d318e; }
+  .workshop-figure { max-height: 430px; }
+  .workshop-collection { gap: 9px; margin-top: 24px; }
+  .workshop-collection figcaption { font-size: 14px; }
+  .workshop-options { grid-template-columns: 1fr; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .fabric-sheen, .fabric-weave { transition: none; }
+  .fabric-folds { display: none; }
+}

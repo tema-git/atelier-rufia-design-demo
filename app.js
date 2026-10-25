@@ -11,11 +11,11 @@
     const color = colors[form.elements.color.value];
     document.querySelector('#garment-use').setAttribute('href',`assets/silhouettes.svg#${form.elements.shape.value}`);
     figure.style.setProperty('--fabric-color',color.hex);
-    figure.setAttribute('aria-label',`Концептуальный эскиз: ${shape.name.toLowerCase()}, цвет ${color.name.toLowerCase()}`);
+    figure.setAttribute('aria-label',`Полотно эскиза: ${shape.name.toLowerCase()}, цвет ${color.name.toLowerCase()}`);
     document.querySelector('#sketch-number').textContent = shape.number;
     document.querySelector('#color-name').value = color.name;
     document.querySelector('#sketch-caption').textContent = `${shape.name} / ${color.name.toLowerCase()}`;
-    if(animate && !reducedMotion.matches && figure.animate) figure.animate([{opacity:.55,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{duration:210,easing:'ease-out'});
+    if(animate && !reducedMotion.matches && figure.animate) figure.animate([{opacity:.55},{opacity:1}],{duration:210,easing:'ease-out'});
   }
   form.elements.note.addEventListener('input', () => { form.elements.note.value = form.elements.note.value.slice(0,160); });
   update();
@@ -24,7 +24,8 @@
     event.preventDefault();
     const shape = shapes[form.elements.shape.value], color = colors[form.elements.color.value];
     const note = form.elements.note.value.trim();
-    brief = `Здравствуйте! Хочу обсудить индивидуальный пошив.\nСилуэт: ${shape.name.toLowerCase()}.\nЦветовое настроение: ${color.name.toLowerCase()}.\nНазначение: ${form.elements.occasion.value.toLowerCase()}.`+(note?`\nПожелания: ${note}`:'')+'\nПодскажите, пожалуйста, возможность пошива, ориентир по стоимости и удобное время для встречи.';
+    const seams = Number(figure.dataset.seams || 0);
+    brief = `Здравствуйте! Хочу обсудить индивидуальный пошив.\nСилуэт: ${shape.name.toLowerCase()}.\nЦветовое настроение: ${color.name.toLowerCase()}.\nНазначение: ${form.elements.occasion.value.toLowerCase()}.`+(note?`\nПожелания: ${note}`:'')+(seams?`\nНа эскизе добавлено авторских линий: ${seams}. Эскиз могу приложить отдельно.`:'')+'\nПодскажите, пожалуйста, возможность пошива, ориентир по стоимости и удобное время для встречи.';
     document.querySelector('#brief-summary').textContent = brief;
     document.querySelector('#copy-status').textContent = '';
     document.querySelector('#brief-dialog').showModal();
@@ -37,90 +38,7 @@
     }
     document.querySelector('#copy-status').textContent = success?'Запрос скопирован. Передайте его ателье удобным способом.':'Автоматическое копирование недоступно. Выделите и скопируйте текст запроса выше.';
   });
-  const stitchTable = document.querySelector('.stitch-table');
-  const stitchPoints = [...document.querySelectorAll('.stitch-point')];
-  const stitchRoute = document.querySelector('.stitch-route');
-  const stitchProgress = document.querySelector('.stitch-progress');
-  const stitchStatus = document.querySelector('#stitch-status');
-  const stitchResult = document.querySelector('#stitch-result');
-  const stitchInstruction = document.querySelector('#stitch-instruction');
-  const stitchStart = document.querySelector('#stitch-start');
-  const stitchNext = document.querySelector('#stitch-next');
-  const stitchRestart = document.querySelector('#stitch-restart');
-  const stitchSegments = [
-    'M216 104', ' Q300 174 384 104', ' Q389 181 420 227.5', ' L360 312',
-    ' Q389 417 456 533', ' Q300 576 144 533', ' Q211 417 240 312',
-    ' L180 227.5 Q211 181 216 104 Z'
-  ];
-  let stitched = 0;
   function refreshScroll() { if(window.ScrollTrigger) ScrollTrigger.refresh(); }
-  function paintStitches() {
-    stitchRoute.setAttribute('d', stitchSegments.slice(0, stitched).join(''));
-    stitchPoints.forEach((point, index) => {
-      const done = index < stitched, current = stitched > 0 && index === stitched;
-      point.classList.toggle('is-done', done);
-      point.classList.toggle('is-next', current);
-      point.tabIndex = current ? 0 : -1;
-      point.setAttribute('aria-label', `Точка ${index + 1}${done ? ', соединена' : current ? ', следующий стежок' : ''}`);
-      if(current) point.setAttribute('aria-current','step'); else point.removeAttribute('aria-current');
-    });
-    document.querySelector('#stitch-count').textContent = stitched;
-    stitchProgress.setAttribute('aria-valuenow', stitched);
-    stitchProgress.setAttribute('aria-valuetext', `${stitched} из 8 точек`);
-    stitchProgress.firstElementChild.style.transform = `scaleX(${stitched / 8})`;
-    const complete = stitched === 8;
-    stitchTable.classList.toggle('is-complete', complete);
-    stitchTable.classList.toggle('has-started', stitched > 0);
-    stitchResult.hidden = !complete;
-    stitchStart.hidden = stitched > 0;
-    stitchNext.hidden = stitched === 0 || complete;
-    stitchRestart.hidden = stitched === 0;
-    stitchInstruction.textContent = complete ? 'Готово! Вы создали силуэт платья.' : stitched ? `Нажмите светлую точку ${stitched + 1}.` : 'Начните игру — появится первый стежок.';
-    stitchNext.setAttribute('aria-label', `Сделать следующий стежок, к точке ${Math.min(8, stitched + 1)}`);
-    refreshScroll();
-  }
-  function focusStitchTarget(target) {
-    target.focus({preventScroll: true});
-    target.scrollIntoView({block: 'nearest', behavior: 'instant'});
-  }
-  function startStitches(event, fromPoint = false) {
-    if(stitched > 0) return;
-    stitched = 2;
-    paintStitches();
-    stitchStatus.textContent = 'Первый стежок готов: точки 1 и 2 соединены. Продолжите с точки 3 или кнопкой.';
-    if(event.detail === 0) focusStitchTarget(fromPoint ? stitchPoints[2] : stitchNext);
-  }
-  function advanceStitch(event, fromPoint = false) {
-    if(stitched === 0 || stitched === 8) return;
-    stitched += 1;
-    paintStitches();
-    stitchStatus.textContent = stitched === 8 ? 'Все 8 точек соединены. Ваше платье готово! Можно начать заново или выбрать цвет в эскизе.' : `Стежок сделан. Соединено ${stitched} из 8 точек. Следующая — ${stitched + 1}.`;
-    if(event.detail === 0) focusStitchTarget(stitched === 8 ? stitchRestart : fromPoint ? stitchPoints[stitched] : stitchNext);
-  }
-  stitchStart.addEventListener('click', event => startStitches(event));
-  stitchNext.addEventListener('click', event => advanceStitch(event));
-  stitchPoints.forEach((point, index) => point.addEventListener('click', event => {
-    if(stitched === 0) {
-      if(index === 0) startStitches(event, true);
-      else stitchStatus.textContent = 'Сначала нажмите «Начать игру» — мы покажем первый стежок.';
-      return;
-    }
-    if(stitched === 8) return;
-    if(index !== stitched) {
-      stitchStatus.textContent = `Сейчас нужна светлая точка ${stitched + 1}. Или нажмите «Сделать следующий стежок».`;
-      stitchPoints[stitched].classList.remove('is-prompted');
-      requestAnimationFrame(() => stitchPoints[stitched]?.classList.add('is-prompted'));
-      return;
-    }
-    advanceStitch(event, true);
-  }));
-  stitchRestart.addEventListener('click', event => {
-    stitched = 0;
-    stitchPoints.forEach(point => point.classList.remove('is-prompted'));
-    paintStitches();
-    stitchStatus.textContent = 'Чистое лекало. Нажмите «Начать игру», чтобы сделать первый стежок.';
-    if(event.detail === 0) focusStitchTarget(stitchStart);
-  });
 
   const appointmentForm = document.querySelector('#appointment-form');
   const appointmentName = appointmentForm.elements.name;
@@ -232,16 +150,9 @@
     observer.observe(surface);
     settleImmediately();
   }
-  const fabricFrame = document.querySelector('.fabric-frame');
-  const fabricPhoto = fabricFrame.querySelector('img');
-  const fabricThread = fabricFrame.querySelector('.fabric-thread path');
-  const fabricNeedle = fabricFrame.querySelector('.fabric-needle');
-  reactToPointer(document.querySelector('.hero'), fabricFrame, (x, y, enabled) => {
-    fabricPhoto.style.transform = enabled ? `translate3d(${x * 23}px, ${y * 18}px, 0) scale(1.1) rotate(${x * 1.2}deg)` : '';
-    fabricNeedle.style.transform = `translate(calc(-50% + ${x * 100}px), calc(-50% + ${y * 140}px)) rotate(${x * 9}deg)`;
-    const centerX = 300 + x * 125, centerY = 375 + y * 150;
-    fabricThread.setAttribute('d',`M75 0 Q${480 + x * 80} ${260 + y * 90} ${centerX} ${centerY} T525 750`);
-  });
+  const hero = document.querySelector('.hero');
+  const measure = hero.querySelector('.measure-line');
+  reactToPointer(hero, hero, (x, y) => { measure.style.opacity = String(.65 + Math.abs(x) * .35); });
   const approach = document.querySelector('#approach');
   const approachThread = approach.querySelector('.approach-thread path');
   reactToPointer(approach, approach, (x, y) => {
@@ -256,19 +167,13 @@
   });
   const sketch = document.querySelector('#sketch');
   const sketchBoard = sketch.querySelector('.sketch-board');
-  const pencil = sketch.querySelector('.sketch-pencil');
   reactToPointer(sketch, sketch, (x, y, enabled) => {
-    figure.style.translate = enabled ? `${x * 15}px ${y * 10}px` : '';
-    figure.style.rotate = enabled ? `${x * 2.5}deg` : '';
-    sketchBoard.style.backgroundPosition = enabled ? `${x * 9}px ${y * 9}px` : '';
-    pencil.style.transform = `translate(${x * 28}px, ${y * 75}px) rotate(${16 + x * 13}deg)`;
+    sketchBoard.style.backgroundPosition = enabled ? `${x * 7}px ${y * 7}px` : '';
   });
-  const stitchStage = document.querySelector('.stitch-stage');
-  const stitchRuler = document.querySelector('.stitch-ruler');
-  const companionThread = document.querySelector('.companion-thread path');
-  reactToPointer(document.querySelector('#line-game'), stitchStage, (x, y) => {
-    stitchRuler.style.transform = `translateY(${y * 150}px) rotate(${x * 7}deg)`;
-    companionThread.setAttribute('d', `M0 90 C${90 + x * 35} ${90 + y * 25} ${60 - x * 20} ${15 + y * 20} ${150 + x * 25} ${40 + y * 25} S${220 - x * 25} ${130 - y * 30} 320 35`);
+  const workshop = document.querySelector('#line-game');
+  const workshopFigure = document.querySelector('#workshop-garment');
+  reactToPointer(workshop, workshop, (x, y, enabled) => {
+    workshopFigure.style.translate = enabled ? `${x * 5}px ${y * 3}px` : '';
   });
   const contact = document.querySelector('#contact');
   const contactThread = contact.querySelector('.contact-thread path');
@@ -291,8 +196,8 @@
     gsap.registerPlugin(ScrollTrigger);
     const scrollMotion = gsap.matchMedia();
     scrollMotion.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.to('.fabric-frame', {
-        y: -32, ease: 'none',
+      gsap.to('.measure-line span', {
+        scaleY: .72, transformOrigin: 'center', ease: 'none',
         scrollTrigger: {trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true}
       });
       const thread = document.querySelector('.approach-thread path');
